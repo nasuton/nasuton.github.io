@@ -1,0 +1,120 @@
+---
+import * as simpleIcons from 'simple-icons';
+
+interface Props {
+	name: string;
+}
+
+const { name } = Astro.props;
+
+// スキル名 → simple-icons のキーのマッピング
+const skillMap: Record<string, string> = {
+	'javascript'  : 'siJavascript',
+	'typescript'  : 'siTypescript',
+	'python'      : 'siPython',
+	'react'       : 'siReact',
+	'vue'         : 'siVuedotjs',
+	'vue.js'      : 'siVuedotjs',
+	'astro'       : 'siAstro',
+	'node.js'     : 'siNodedotjs',
+	'nodejs'      : 'siNodedotjs',
+	'html'        : 'siHtml5',
+	'html5'       : 'siHtml5',
+	'css'         : 'siCss3',
+	'css3'        : 'siCss3',
+	'git'         : 'siGit',
+	'github'      : 'siGithub',
+	'docker'      : 'siDocker',
+	'rust'        : 'siRust',
+	'go'          : 'siGo',
+	'java'        : 'siJava',
+	'c#'          : 'siCsharp',
+	'c++'         : 'siCplusplus',
+	'php'         : 'siPhp',
+	'ruby'        : 'siRuby',
+	'swift'       : 'siSwift',
+	'kotlin'      : 'siKotlin',
+	'next.js'     : 'siNextdotjs',
+	'nextjs'      : 'siNextdotjs',
+	'nuxt'        : 'siNuxtdotjs',
+	'nuxt.js'     : 'siNuxtdotjs',
+	'svelte'      : 'siSvelte',
+	'tailwind'    : 'siTailwindcss',
+	'tailwindcss' : 'siTailwindcss',
+	'mysql'       : 'siMysql',
+	'postgresql'  : 'siPostgresql',
+	'postgres'    : 'siPostgresql',
+	'mongodb'     : 'siMongodb',
+	'redis'       : 'siRedis',
+	'aws'         : 'siAmazonwebservices',
+	'linux'       : 'siLinux',
+	'figma'       : 'siFigma',
+	'vite'        : 'siVite',
+	'vitest'      : 'siVitest',
+	'jest'        : 'siJest',
+	'eslint'      : 'siEslint',
+	'prettier'    : 'siPrettier',
+	'angular'     : 'siAngular',
+	'flutter'     : 'siFlutter',
+	'dart'        : 'siDart',
+	'firebase'    : 'siFirebase',
+	'supabase'    : 'siSupabase',
+	'vercel'      : 'siVercel',
+	'netlify'     : 'siNetlify',
+	'cloudflare'  : 'siCloudflare',
+	'graphql'     : 'siGraphql',
+	'prisma'      : 'siPrisma',
+	'sass'        : 'siSass',
+	'scss'        : 'siSass',
+	'bash'        : 'siGnubash',
+	'ansible'     : 'siAnsible',
+	'kubernetes'  : 'siKubernetes',
+	'terraform'   : 'siTerraform',
+	'unity'       : 'siUnity',
+	'unreal'      : 'siUnrealengine',
+};
+
+// simple-icons に収録されていないスキル用のカスタムアイコン
+const customIconMap: Record<string, { hex: string; path: string }> = {
+	'sql server': {
+		hex: '0078D4',
+		// Windows 4分割フラグ（Microsoft ブランドカラー）
+		path: 'M0 0h11.5v11.5H0V0zm12.5 0H24v11.5H12.5V0zM0 12.5h11.5V24H0V12.5zm12.5 0H24V24H12.5V12.5z',
+	},
+	'mssql': {
+		hex: '0078D4',
+		path: 'M0 0h11.5v11.5H0V0zm12.5 0H24v11.5H12.5V0zM0 12.5h11.5V24H0V12.5zm12.5 0H24V24H12.5V12.5z',
+	},
+	'powershell': {
+		hex: '0078D4',
+		// ターミナル風アイコン（>_ 形状）
+		path: 'M2 5.27L3.27 4 9 9.73 3.27 15.46 2 14.19 6.46 9.73 2 5.27zM10 14h10v2H10v-2z',
+	},
+};
+
+const nameLower = name.toLowerCase();
+const key = skillMap[nameLower];
+const icon = key
+	? (simpleIcons as Record<string, { hex: string; path: string } | undefined>)[key]
+	: customIconMap[nameLower];
+const color = icon ? `#${icon.hex}` : '#6366f1';
+---
+
+<li class="flex items-center gap-2 border border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium bg-white hover:shadow-md transition-shadow cursor-default select-none">
+	{icon ? (
+		<svg
+			role="img"
+			viewBox="0 0 24 24"
+			xmlns="http://www.w3.org/2000/svg"
+			class="w-4 h-4 flex-shrink-0"
+			style={`fill: ${color};`}
+			aria-label={name}
+		>
+			<path d={icon.path} />
+		</svg>
+	) : (
+		<span class="w-4 h-4 flex-shrink-0 rounded-full inline-block" style={`background: ${color};`}></span>
+	)}
+	<span class="text-gray-700">{name}</span>
+</li>
+
