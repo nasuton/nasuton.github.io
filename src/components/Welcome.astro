@@ -2,6 +2,22 @@
 // プロフィール画像は public/profile.jpg に配置してください
 import SkillBadge from './SkillBadge.astro';
 
+interface PortfolioItem {
+	title: string;
+	description: string;
+	url?: string;
+	techs: string[];
+}
+
+const portfolio: PortfolioItem[] = [
+	{
+		title: 'ナストンのまとめ',
+		description: '技術ブログ。気になった技術や日々の学びをまとめています',
+		url: 'https://nasuton.net/blog/',
+		techs: ['WordPress'],
+	},
+];
+
 const skills = [
 	'JavaScript',
 	'TypeScript',
@@ -79,8 +95,38 @@ const skills = [
 		<!-- ポートフォリオセクション -->
 		<section id="portfolio" class="mb-12 scroll-mt-4">
 			<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">ポートフォリオ / 作品</h2>
-			<div>
-				<p class="text-gray-600 leading-relaxed">・ナストンのまとめ(技術ブログ)</p>
+			<div class="flex flex-col gap-4">
+				{portfolio.map((item) => (
+					<div class="border border-gray-200 rounded-xl p-5 bg-white hover:shadow-md transition-shadow">
+						<div class="flex items-start justify-between gap-3 mb-2">
+							<h3 class="text-base font-semibold text-gray-900">{item.title}</h3>
+							{item.url && (
+								<a
+									href={item.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-white bg-indigo-500 hover:bg-indigo-600 hover:-translate-y-0.5 transition-all flex-shrink-0"
+								>
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+										<path d="M14 3v2H7v14h14v-7h2v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8zm7 0v7h-2V6.413l-7.293 7.294-1.414-1.414L19.585 5H15V3h6z"/>
+									</svg>
+									リンク
+								</a>
+							)}
+						</div>
+						<p class="text-sm text-gray-600 leading-relaxed mb-3">{item.description}</p>
+						{item.techs.length > 0 && (
+							<div>
+								<p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">使用技術</p>
+								<ul class="flex flex-wrap gap-2 list-none p-0 m-0">
+									{item.techs.map((tech) => (
+										<SkillBadge name={tech} />
+									))}
+								</ul>
+							</div>
+						)}
+					</div>
+				))}
 			</div>
 		</section>
 

@@ -28,7 +28,6 @@ const skillMap: Record<string, string> = {
 	'rust'        : 'siRust',
 	'go'          : 'siGo',
 	'java'        : 'siJava',
-	'c#'          : 'siCsharp',
 	'c++'         : 'siCplusplus',
 	'php'         : 'siPhp',
 	'ruby'        : 'siRuby',
@@ -76,6 +75,11 @@ const skillMap: Record<string, string> = {
 
 // simple-icons に収録されていないスキル用のカスタムアイコン
 const customIconMap: Record<string, { hex: string; path: string }> = {
+	'c#': {
+		hex: '239120',
+		// MDI language-csharp アイコン
+		path: 'M11.5 15.97l.41 2.44c-.26.14-.68.27-1.24.38-.57.13-1.24.2-2.01.2-2.21-.04-3.87-.7-4.98-1.96C2.57 15.77 2 14.16 2 12.21c.05-2.31.72-4.08 2.01-5.29C5.29 5.71 6.85 5.1 8.7 5.1c.75 0 1.4.07 1.94.18s.94.25 1.2.4l-.58 2.49-1.06-.34c-.4-.1-.86-.15-1.39-.15-1.16-.01-2.1.35-2.8 1.09-.71.74-1.08 1.84-1.1 3.31 0 1.36.36 2.42 1.09 3.17.92.78 1.85 1.15 2.79 1.11.53 0 1-.06 1.39-.18l1.22-.21M13.89 19l.61-4H13l.34-2h1.5l.32-2h-1.5L14 9h1.5l.61-4h2l-.61 4h1l.61-4h2l-.61 4H22l-.34 2h-1.5l-.32 2h1.5L21 15h-1.5l-.61 4h-2l.61-4h-1l-.61 4h-2m2.95-6h1l.32-2h-1l-.32 2z',
+	},
 	'sql server': {
 		hex: '0078D4',
 		// Windows 4分割フラグ（Microsoft ブランドカラー）
