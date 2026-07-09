@@ -1,5 +1,19 @@
 ---
 import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	ogImage?: string;
+	url?: string;
+}
+
+const {
+	title = 'ナストン | About Me',
+	description = '熱しやすく冷めやすいプログラマー、ナストンのプロフィールページです。スキルやポートフォリオ、趣味などを紹介しています。',
+	ogImage = '/profile.jpg',
+	url = Astro.url.href,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -10,7 +24,25 @@ import '../styles/global.css';
 		<link rel="icon" type="image/jpeg" href="/profile.jpg" />
 		<link rel="apple-touch-icon" href="/profile.jpg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>About Me</title>
+		<title>{title}</title>
+
+		<!-- 基本メタタグ -->
+		<meta name="description" content={description} />
+
+		<!-- Open Graph (OGP) -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={url} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:locale" content="ja_JP" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:url" content={url} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
 	</head>
 	<body class="overflow-x-hidden">
 		<slot />
