@@ -14,6 +14,11 @@ const {
 	ogImage = '/profile.jpg',
 	url = Astro.url.href,
 } = Astro.props;
+
+// OGP / Twitter Card の画像・URL は絶対URLである必要があるため解決しておく
+const siteBase = Astro.site ?? Astro.url;
+const canonicalUrl = new URL(url, siteBase).href;
+const ogImageUrl = new URL(ogImage, siteBase).href;
 ---
 
 <!doctype html>
@@ -28,24 +33,25 @@ const {
 
 		<!-- 基本メタタグ -->
 		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalUrl} />
 
 		<!-- Open Graph (OGP) -->
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content={url} />
+		<meta property="og:url" content={canonicalUrl} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:image" content={ogImage} />
+		<meta property="og:image" content={ogImageUrl} />
+		<meta property="og:image:alt" content={title} />
 		<meta property="og:locale" content="ja_JP" />
 
 		<!-- Twitter Card -->
 		<meta name="twitter:card" content="summary" />
-		<meta name="twitter:url" content={url} />
+		<meta name="twitter:url" content={canonicalUrl} />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
-		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image" content={ogImageUrl} />
 	</head>
 	<body class="overflow-x-hidden">
 		<slot />
 	</body>
 </html>
-

@@ -11,17 +11,17 @@ interface PortfolioItem {
 
 const portfolio: PortfolioItem[] = [
 	{
-		title: 'ナストンのまとめ',
-		description: '技術ブログ。気になった技術や日々の学びをまとめています',
+		title: '技術ブログ(ナストンのまとめ)',
+		description: '気になった技術や日々の学びをまとめています',
 		url: 'https://nasuton.net/blog/',
 		techs: ['WordPress'],
 	},
 	{
-    	title: 'パスワード生成ツール',
-    	description: '安全なパスワードを生成するためのシンプルなツール。フロントエンドをReact、バックエンドをGo言語ginフレームワークで構築しています。',
-    	url: 'https://nasuton.github.io/PasswordGeneration/',
-    	techs: ['go', 'gin', 'react', 'typescript'],
-    },
+		title: 'パスワード生成ツール',
+		description: '安全なパスワードを生成するためのシンプルなツール。フロントエンドをReact、バックエンドをGo言語ginフレームワークで構築しています。',
+		url: 'https://nasuton.github.io/PasswordGeneration/',
+		techs: ['Go', 'Gin', 'React', 'TypeScript'],
+	},
 ];
 
 const skills = [
@@ -40,10 +40,10 @@ const skills = [
 	'GitHub',
 	'Docker',
 	'SQL Server',
-    'PowerShell',
-    'Mysql',
-    'Go',
-    'gin'
+	'PowerShell',
+	'MySQL',
+	'Go',
+	'Gin',
 ];
 ---
 
@@ -55,12 +55,13 @@ const skills = [
 			<img
 				id="profile-image"
 				src="/profile.jpg"
-				alt="プロフィール画像"
+				alt="ナストンのプロフィール画像"
+				width="240"
+				height="240"
 				class="w-full h-full object-cover"
-				onerror="this.style.display='none'; document.getElementById('profile-placeholder').style.display='flex';"
 			/>
 			<div id="profile-placeholder" class="hidden w-full h-full items-center justify-center text-gray-400">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-16 h-16">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-16 h-16" aria-hidden="true" focusable="false">
 					<path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
 				</svg>
 			</div>
@@ -70,17 +71,25 @@ const skills = [
 	</header>
 
 	<!-- タブボタン -->
-	<div class="flex gap-2 mb-8 border-b border-gray-200">
+	<div class="flex gap-2 mb-8 border-b border-gray-200" role="tablist" aria-label="表示内容の切り替え">
 		<button
+			type="button"
 			id="tab-general"
 			class="tab-btn px-5 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 transition-colors border-indigo-500 text-indigo-600 bg-indigo-50"
+			role="tab"
+			aria-selected="true"
+			aria-controls="content-general"
 			data-tab="general"
 		>
 			🌸 一般
 		</button>
 		<button
+			type="button"
 			id="tab-tech"
 			class="tab-btn px-5 py-2.5 text-sm font-semibold rounded-t-lg border-b-2 transition-colors border-transparent text-gray-500 hover:text-gray-700"
+			role="tab"
+			aria-selected="false"
+			aria-controls="content-tech"
 			data-tab="tech"
 		>
 			💻 技術
@@ -88,7 +97,7 @@ const skills = [
 	</div>
 
 	<!-- 目次（一般タブ） -->
-	<nav id="toc-general" class="bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12">
+	<nav id="toc-general" class="bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12" aria-label="一般タブの目次">
 		<h2 class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-3">目次</h2>
 		<ol class="list-decimal list-inside flex flex-col gap-1.5">
 			<li><a href="#profile" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">プロフィール</a></li>
@@ -99,7 +108,7 @@ const skills = [
 	</nav>
 
 	<!-- 目次（技術タブ） -->
-	<nav id="toc-tech" class="hidden bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12">
+	<nav id="toc-tech" class="hidden bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12" aria-label="技術タブの目次">
 		<h2 class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-3">目次</h2>
 		<ol class="list-decimal list-inside flex flex-col gap-1.5">
 			<li><a href="#profile" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">プロフィール</a></li>
@@ -114,12 +123,12 @@ const skills = [
 		<section id="profile" class="mb-12 scroll-mt-4">
 			<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">プロフィール</h2>
 			<div>
-				<p class="text-gray-600 leading-relaxed">気になったものはとりあえず触ってみる。現役プログラマー<br>最近は、フィルムカメラにお熱</p>
+				<p class="text-gray-600 leading-relaxed">気になったものはとりあえず触ってみる。現役プログラマー<br />最近は、フィルムカメラにお熱</p>
 			</div>
 		</section>
 
 		<!-- ===== 技術タブ ===== -->
-		<div id="content-tech" class="hidden">
+		<div id="content-tech" class="hidden" role="tabpanel" aria-labelledby="tab-tech">
 			<!-- スキルセクション -->
 			<section id="skills" class="mb-12 scroll-mt-4">
 				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">触ったことのあるもの</h2>
@@ -143,9 +152,10 @@ const skills = [
 										href={item.url}
 										target="_blank"
 										rel="noopener noreferrer"
-										class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-white bg-indigo-500 hover:bg-indigo-600 hover:-translate-y-0.5 transition-all flex-shrink-0"
+										class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-white bg-indigo-500 hover:bg-indigo-600 hover:-translate-y-0.5 transition-all shrink-0"
+										aria-label={`${item.title} を新しいタブで開く`}
 									>
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5" aria-hidden="true" focusable="false">
 											<path d="M14 3v2H7v14h14v-7h2v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8zm7 0v7h-2V6.413l-7.293 7.294-1.414-1.414L19.585 5H15V3h6z"/>
 										</svg>
 										リンク
@@ -176,54 +186,54 @@ const skills = [
 						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-black hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
 						href="https://x.com/nasuton_matome" target="_blank" rel="noopener noreferrer"
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
 							<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
 						</svg>
 						X (Twitter)
 					</a>
 					<a
-                    	class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-500 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
-                    	href="https://bsky.app/profile/nasuton-matome.bsky.social" target="_blank" rel="noopener noreferrer"
-                    >
-                    	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                    		<path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z"/>
-                    	</svg>
-                    	Bluesky
-                    </a>
+						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-500 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
+						href="https://bsky.app/profile/nasuton-matome.bsky.social" target="_blank" rel="noopener noreferrer"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
+							<path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z"/>
+						</svg>
+						Bluesky
+					</a>
 					<a
 						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gray-800 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
 						href="https://github.com/nasuton" target="_blank" rel="noopener noreferrer"
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
 							<path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
 						</svg>
 						GitHub
 					</a>
 					<a
-                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-400 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
-                    	href="https://note.com/nasuton_matome" target="_blank" rel="noopener noreferrer"
-                    >
-                    	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                    		<path d="M21 3H3a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8H10v-2h8v2zm0-4H10v-2h8v2zm0-4H10V7h8v2z"/>
-                        </svg>
-                    	note
-                    </a>
+						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-400 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
+						href="https://note.com/nasuton_matome" target="_blank" rel="noopener noreferrer"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
+							<path d="M21 3H3a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8H10v-2h8v2zm0-4H10v-2h8v2zm0-4H10V7h8v2z"/>
+						</svg>
+						note
+					</a>
 				</div>
 			</section>
 		</div>
 
 		<!-- ===== 一般タブ ===== -->
-		<div id="content-general">
+		<div id="content-general" role="tabpanel" aria-labelledby="tab-general">
 			<!-- 趣味セクション -->
 			<section id="hobby" class="mb-12 scroll-mt-4">
 				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">趣味</h2>
-				<div>
-					<p class="text-gray-600 leading-relaxed">・読書</p>
-					<p class="text-gray-600 leading-relaxed">・水族館巡り</p>
-					<p class="text-gray-600 leading-relaxed">・ゲーム</p>
-					<p class="text-gray-600 leading-relaxed">・社寺巡り</p>
-					<p class="text-gray-600 leading-relaxed">・フィルムカメラ</p>
-				</div>
+				<ul class="list-disc list-inside flex flex-col gap-1 text-gray-600 leading-relaxed">
+					<li>読書</li>
+					<li>水族館巡り</li>
+					<li>ゲーム</li>
+					<li>社寺巡り</li>
+					<li>フィルムカメラ</li>
+				</ul>
 			</section>
 
 			<!-- 撮影機材セクション -->
@@ -231,20 +241,27 @@ const skills = [
 				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">撮影機材</h2>
 				<div class="flex flex-col gap-3">
 					<div class="border border-gray-200 rounded-xl p-4 bg-white">
-						<p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">スマホ</p>
-						<p class="text-gray-700">・iPhone 15 Pro</p>
-						<p class="text-gray-700">・Google Pixel 7 Pro</p>
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">スマホ</h3>
+						<ul class="list-disc list-inside text-gray-700">
+							<li>iPhone 15 Pro</li>
+							<li>Google Pixel 7 Pro</li>
+						</ul>
 					</div>
 					<div class="border border-gray-200 rounded-xl p-4 bg-white">
-						<p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">デジカメ</p>
-						<p class="text-gray-700">・KODAK PIXPRO C1</p>
-						<p class="text-gray-700">・KODAK CHARMERA Keychain Digital Camera</p>
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">デジカメ</h3>
+						<ul class="list-disc list-inside text-gray-700">
+							<li>KODAK PIXPRO C1</li>
+							<li>KODAK CHARMERA Keychain Digital Camera</li>
+						</ul>
 					</div>
 					<div class="border border-gray-200 rounded-xl p-4 bg-white">
-						<p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">フィルムカメラ</p>
-						<p class="text-gray-700">・PENTAX Zoom 60 DATE</p>
-						<p class="text-gray-700">・PENTAX ESPIO 115</p>
-						<p class="text-gray-700">・PENTAX SP + Super-Multi-Coated TAKUMAR 55mm F1.8</p>
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">フィルムカメラ</h3>
+						<ul class="list-disc list-inside text-gray-700">
+							<li>PENTAX Zoom 60 DATE</li>
+							<li>PENTAX ESPIO 115</li>
+							<li>PENTAX SP + Super-Multi-Coated TAKUMAR 55mm F1.8</li>
+							<li>Canon DEMI EE17</li>
+						</ul>
 					</div>
 				</div>
 			</section>
@@ -257,7 +274,7 @@ const skills = [
 						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-black hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
 						href="https://x.com/Nasuton2" target="_blank" rel="noopener noreferrer"
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
 							<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
 						</svg>
 						X (Twitter)
@@ -266,7 +283,7 @@ const skills = [
 						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-500 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
 						href="https://bsky.app/profile/nasuton.bsky.social" target="_blank" rel="noopener noreferrer"
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
 							<path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.299-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z"/>
 						</svg>
 						Bluesky
@@ -275,20 +292,20 @@ const skills = [
 						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-400 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
 						href="https://note.com/nasuton" target="_blank" rel="noopener noreferrer"
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
 							<path d="M21 3H3a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8H10v-2h8v2zm0-4H10v-2h8v2zm0-4H10V7h8v2z"/>
 						</svg>
 						note
 					</a>
 					<a
-                    	class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-orange-500 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
-                    	href="https://nasuton.net/photo_gallery/" target="_blank" rel="noopener noreferrer"
-                    >
-                    	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                    		<path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/>
-                    	</svg>
-                    	ナストンの記録
-                    </a>
+						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-orange-500 hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
+						href="https://nasuton.net/photo_gallery/" target="_blank" rel="noopener noreferrer"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
+							<path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/>
+						</svg>
+						ナストンの記録
+					</a>
 				</div>
 			</section>
 		</div>
@@ -296,40 +313,57 @@ const skills = [
 </div>
 
 <script>
-	const tabGeneral = document.getElementById('tab-general')!;
-	const tabTech = document.getElementById('tab-tech')!;
-	const contentGeneral = document.getElementById('content-general')!;
-	const contentTech = document.getElementById('content-tech')!;
-	const tocGeneral = document.getElementById('toc-general')!;
-	const tocTech = document.getElementById('toc-tech')!;
+	type TabName = 'general' | 'tech';
 
-	const activeClasses = ['border-indigo-500', 'text-indigo-600', 'bg-indigo-50'];
-	const inactiveClasses = ['border-transparent', 'text-gray-500'];
+	const tabGeneral = document.getElementById('tab-general');
+	const tabTech = document.getElementById('tab-tech');
+	const contentGeneral = document.getElementById('content-general');
+	const contentTech = document.getElementById('content-tech');
+	const tocGeneral = document.getElementById('toc-general');
+	const tocTech = document.getElementById('toc-tech');
 
-	function switchTab(tab: 'general' | 'tech') {
-		if (tab === 'general') {
-			// 一般タブをアクティブに
-			activeClasses.forEach(c => tabGeneral.classList.add(c));
-			inactiveClasses.forEach(c => tabGeneral.classList.remove(c));
-			inactiveClasses.forEach(c => tabTech.classList.add(c));
-			activeClasses.forEach(c => tabTech.classList.remove(c));
-			contentGeneral.classList.remove('hidden');
-			contentTech.classList.add('hidden');
-			tocGeneral.classList.remove('hidden');
-			tocTech.classList.add('hidden');
-		} else {
-			// 技術タブをアクティブに
-			activeClasses.forEach(c => tabTech.classList.add(c));
-			inactiveClasses.forEach(c => tabTech.classList.remove(c));
-			inactiveClasses.forEach(c => tabGeneral.classList.add(c));
-			activeClasses.forEach(c => tabGeneral.classList.remove(c));
-			contentTech.classList.remove('hidden');
-			contentGeneral.classList.add('hidden');
-			tocTech.classList.remove('hidden');
-			tocGeneral.classList.add('hidden');
-		}
+	const ACTIVE_CLASSES = ['border-indigo-500', 'text-indigo-600', 'bg-indigo-50'];
+	const INACTIVE_CLASSES = ['border-transparent', 'text-gray-500'];
+
+	if (tabGeneral && tabTech && contentGeneral && contentTech && tocGeneral && tocTech) {
+		const setTabState = (tab: HTMLElement, isActive: boolean) => {
+			ACTIVE_CLASSES.forEach((c) => tab.classList.toggle(c, isActive));
+			INACTIVE_CLASSES.forEach((c) => tab.classList.toggle(c, !isActive));
+			tab.setAttribute('aria-selected', String(isActive));
+		};
+
+		const switchTab = (tab: TabName) => {
+			const isGeneral = tab === 'general';
+
+			setTabState(tabGeneral, isGeneral);
+			setTabState(tabTech, !isGeneral);
+
+			contentGeneral.classList.toggle('hidden', !isGeneral);
+			contentTech.classList.toggle('hidden', isGeneral);
+			tocGeneral.classList.toggle('hidden', !isGeneral);
+			tocTech.classList.toggle('hidden', isGeneral);
+		};
+
+		tabGeneral.addEventListener('click', () => switchTab('general'));
+		tabTech.addEventListener('click', () => switchTab('tech'));
 	}
 
-	tabGeneral.addEventListener('click', () => switchTab('general'));
-	tabTech.addEventListener('click', () => switchTab('tech'));
+	// プロフィール画像の読み込みに失敗した場合はプレースホルダーを表示する
+	const profileImage = document.getElementById('profile-image') as HTMLImageElement | null;
+	const profilePlaceholder = document.getElementById('profile-placeholder');
+
+	if (profileImage && profilePlaceholder) {
+		const showPlaceholder = () => {
+			profileImage.classList.add('hidden');
+			profilePlaceholder.classList.remove('hidden');
+			profilePlaceholder.classList.add('flex');
+		};
+
+		profileImage.addEventListener('error', showPlaceholder);
+		// スクリプト実行前に既に読み込みが失敗していた場合のフォールバック
+		if (profileImage.complete && profileImage.naturalWidth === 0) {
+			showPlaceholder();
+		}
+	}
 </script>
+
