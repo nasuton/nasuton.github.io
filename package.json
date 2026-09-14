@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "fetch-posts": "node src/fetch-posts.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

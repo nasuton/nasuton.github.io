@@ -4,6 +4,10 @@ on:
   # main ブランチへの push 時に自動デプロイ
   push:
     branches: [main]
+  # 定期実行: 毎週火曜 9:10 JST（0:10 UTC）にブログ記事を取り直して再デプロイ
+  # ※ GitHub Actions の cron は UTC 基準
+  schedule:
+    - cron: '10 0 * * 2'
   # GitHub Actions タブから手動実行も可能
   workflow_dispatch:
 
@@ -38,6 +42,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # ブログの最新記事を取得して src/data/posts.json を生成
+      - name: Fetch latest blog posts
+        run: npm run fetch-posts
 
       - name: Build with Astro
         run: npm run build

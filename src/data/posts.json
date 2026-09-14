@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Rust言語をはじめてさわる",
+    "url": "https://nasuton.net/blog/rust_verification/",
+    "date": "2026-09-08T09:00:00",
+    "excerpt": "これまで様々な言語をさわってきましたが、今回は比較的新しいRustにさわってみます内容としてはあまり初歩的なこと(プロジ &#8230; \n",
+    "thumb": "https://nasuton.net/blog/wp-content/uploads/2026/09/サムネイル画像146.jpg"
+  },
+  {
+    "title": "Pythonで非同期処理を実装する",
+    "url": "https://nasuton.net/blog/asynchronous_processing_python/",
+    "date": "2026-09-01T09:00:00",
+    "excerpt": "これまでC++、Kotlinといった言語で非同期処理について記載してきましたが、今回はPythonでの非同期処理について &#8230; \n",
+    "thumb": "https://nasuton.net/blog/wp-content/uploads/2026/09/サムネイル画像145.jpg"
+  },
+  {
+    "title": "GraphAPIでリストアイテムを全て取得する",
+    "url": "https://nasuton.net/blog/retrieve_alllistitems_graphapi/",
+    "date": "2026-08-25T09:00:00",
+    "excerpt": "以前にGraphAPI経由でSharePoint上のリストアイテム取得について記載しましたが、それだと200件ずつしか取 &#8230; \n",
+    "thumb": "https://nasuton.net/blog/wp-content/uploads/2026/08/サムネイル画像144.png"
+  }
+]

@@ -1,24 +1,59 @@
 ---
 // プロフィール画像は public/profile.jpg に配置してください
 import SkillBadge from './SkillBadge.astro';
+// src/fetch-posts.mjs（npm run fetch-posts）で生成される最新記事一覧
+import blogPosts from '../data/posts.json';
+// 表示テキストの多言語辞書（ビルド時は日本語で描画し、クライアント側で切り替える）
+import { translations, type TranslationKey } from '../data/i18n';
+
+const t = (key: TranslationKey): string => translations.ja[key];
+
+interface BlogPost {
+	title: string;
+	url: string;
+	date: string;
+	excerpt: string;
+	thumb: string | null;
+}
 
 interface PortfolioItem {
-	title: string;
-	description: string;
+	/** i18n キーのプレフィックス（portfolio.<key>.title など） */
+	key: 'blog' | 'password';
 	url?: string;
 	techs: string[];
+	posts?: BlogPost[];
 }
+
+// WordPress API が返す HTML エンティティ（&#8230; など）をデコードする
+const decodeEntities = (text: string): string =>
+	text
+		.replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+		.replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+		.replace(/&amp;/g, '&')
+		.replace(/&lt;/g, '<')
+		.replace(/&gt;/g, '>')
+		.replace(/&quot;/g, '"')
+		.replace(/&nbsp;/g, ' ')
+		.trim();
+
+const formatDate = (date: string): string =>
+	new Date(date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const latestPosts: BlogPost[] = (blogPosts as BlogPost[]).map((post) => ({
+	...post,
+	title: decodeEntities(post.title),
+	excerpt: decodeEntities(post.excerpt),
+}));
 
 const portfolio: PortfolioItem[] = [
 	{
-		title: '技術ブログ(ナストンのまとめ)',
-		description: '気になった技術や日々の学びをまとめています',
+		key: 'blog',
 		url: 'https://nasuton.net/blog/',
 		techs: ['WordPress'],
+		posts: latestPosts,
 	},
 	{
-		title: 'パスワード生成ツール',
-		description: '安全なパスワードを生成するためのシンプルなツール。フロントエンドをReact、バックエンドをGo言語ginフレームワークで構築しています。',
+		key: 'password',
 		url: 'https://nasuton.github.io/PasswordGeneration/',
 		techs: ['Go', 'Gin', 'React', 'TypeScript'],
 	},
@@ -50,12 +85,40 @@ const skills = [
 <div class="font-sans max-w-2xl mx-auto px-6 py-10 pb-16 text-gray-900">
 
 	<!-- プロフィールヘッダー（共通） -->
-	<header class="flex flex-col items-center text-center mb-10">
+	<header class="relative flex flex-col items-center text-center mb-10">
+		<!-- 言語切り替え -->
+		<div
+			class="absolute top-0 right-0 inline-flex items-center rounded-lg border border-gray-200 bg-gray-50 p-0.5 text-xs font-semibold"
+			role="group"
+			aria-label={t('header.langSwitch')}
+			data-i18n-aria-label="header.langSwitch"
+		>
+			<button
+				type="button"
+				class="lang-btn px-2.5 py-1 rounded-md transition-colors bg-white text-indigo-600 shadow-sm"
+				data-lang="ja"
+				lang="ja"
+				aria-pressed="true"
+			>
+				日本語
+			</button>
+			<button
+				type="button"
+				class="lang-btn px-2.5 py-1 rounded-md transition-colors text-gray-500 hover:text-gray-700"
+				data-lang="en"
+				lang="en"
+				aria-pressed="false"
+			>
+				EN
+			</button>
+		</div>
+
 		<div class="w-28 h-28 rounded-full overflow-hidden mb-4 bg-gray-200 border-4 border-gray-300 flex items-center justify-center">
 			<img
 				id="profile-image"
 				src="/profile.jpg"
-				alt="ナストンのプロフィール画像"
+				alt={t('header.profileAlt')}
+				data-i18n-alt="header.profileAlt"
 				width="240"
 				height="240"
 				class="w-full h-full object-cover"
@@ -66,12 +129,12 @@ const skills = [
 				</svg>
 			</div>
 		</div>
-		<h1 class="text-3xl sm:text-4xl font-bold mb-2 leading-snug">ナストン</h1>
-		<p class="text-base text-gray-500">熱しやすく冷めやすいプログラマー</p>
+		<h1 class="text-3xl sm:text-4xl font-bold mb-2 leading-snug" data-i18n="header.name">{t('header.name')}</h1>
+		<p class="text-base text-gray-500" data-i18n="header.tagline">{t('header.tagline')}</p>
 	</header>
 
 	<!-- タブボタン -->
-	<div class="flex gap-2 mb-8 border-b border-gray-200" role="tablist" aria-label="表示内容の切り替え">
+	<div class="flex gap-2 mb-8 border-b border-gray-200" role="tablist" aria-label={t('tab.ariaLabel')} data-i18n-aria-label="tab.ariaLabel">
 		<button
 			type="button"
 			id="tab-general"
@@ -81,7 +144,7 @@ const skills = [
 			aria-controls="content-general"
 			data-tab="general"
 		>
-			🌸 一般
+			🌸 <span data-i18n="tab.general">{t('tab.general')}</span>
 		</button>
 		<button
 			type="button"
@@ -92,38 +155,41 @@ const skills = [
 			aria-controls="content-tech"
 			data-tab="tech"
 		>
-			💻 技術
+			💻 <span data-i18n="tab.tech">{t('tab.tech')}</span>
 		</button>
 	</div>
 
 	<!-- 目次（一般タブ） -->
-	<nav id="toc-general" class="bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12" aria-label="一般タブの目次">
-		<h2 class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-3">目次</h2>
+	<nav id="toc-general" class="bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12" aria-label={t('toc.generalAria')} data-i18n-aria-label="toc.generalAria">
+		<h2 class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-3" data-i18n="toc.title">{t('toc.title')}</h2>
 		<ol class="list-decimal list-inside flex flex-col gap-1.5">
-			<li><a href="#profile" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">プロフィール</a></li>
-			<li><a href="#hobby" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">趣味</a></li>
-			<li><a href="#camera" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">撮影機材</a></li>
-			<li><a href="#sns-general" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">各リンク</a></li>
+			<li><a href="#profile" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.profile">{t('section.profile')}</a></li>
+			<li><a href="#hobby" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.hobby">{t('section.hobby')}</a></li>
+			<li><a href="#camera" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.camera">{t('section.camera')}</a></li>
+			<li><a href="#sns-general" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.links">{t('section.links')}</a></li>
 		</ol>
 	</nav>
 
 	<!-- 目次（技術タブ） -->
-	<nav id="toc-tech" class="hidden bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12" aria-label="技術タブの目次">
-		<h2 class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-3">目次</h2>
+	<nav id="toc-tech" class="hidden bg-gray-50 border border-gray-200 rounded-xl px-6 py-5 mb-12" aria-label={t('toc.techAria')} data-i18n-aria-label="toc.techAria">
+		<h2 class="text-sm font-bold text-gray-600 uppercase tracking-widest mb-3" data-i18n="toc.title">{t('toc.title')}</h2>
 		<ol class="list-decimal list-inside flex flex-col gap-1.5">
-			<li><a href="#profile" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">プロフィール</a></li>
-			<li><a href="#skills" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">触ったことのあるもの</a></li>
-			<li><a href="#portfolio" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">ポートフォリオ / 作品</a></li>
-			<li><a href="#sns-tech" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors">各リンク</a></li>
+			<li><a href="#profile" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.profile">{t('section.profile')}</a></li>
+			<li><a href="#skills" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.skills">{t('section.skills')}</a></li>
+			<li><a href="#portfolio" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.portfolio">{t('section.portfolio')}</a></li>
+			<li><a href="#sns-tech" class="text-indigo-600 hover:text-purple-500 hover:underline text-sm transition-colors" data-i18n="section.links">{t('section.links')}</a></li>
 		</ol>
 	</nav>
 
 	<main class="min-h-full">
 		<!-- プロフィールセクション（共通） -->
 		<section id="profile" class="mb-12 scroll-mt-4">
-			<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">プロフィール</h2>
+			<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900" data-i18n="section.profile">{t('section.profile')}</h2>
 			<div>
-				<p class="text-gray-600 leading-relaxed">気になったものはとりあえず触ってみる。現役プログラマー<br />最近は、フィルムカメラにお熱</p>
+				<p class="text-gray-600 leading-relaxed">
+					<span data-i18n="profile.line1">{t('profile.line1')}</span><br />
+					<span data-i18n="profile.line2">{t('profile.line2')}</span>
+				</p>
 			</div>
 		</section>
 
@@ -131,7 +197,7 @@ const skills = [
 		<div id="content-tech" class="hidden" role="tabpanel" aria-labelledby="tab-tech">
 			<!-- スキルセクション -->
 			<section id="skills" class="mb-12 scroll-mt-4">
-				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">触ったことのあるもの</h2>
+				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900" data-i18n="section.skills">{t('section.skills')}</h2>
 				<ul class="flex flex-wrap gap-2 list-none p-0 m-0">
 					{skills.map((skill) => (
 						<SkillBadge name={skill} />
@@ -141,34 +207,71 @@ const skills = [
 
 			<!-- ポートフォリオセクション -->
 			<section id="portfolio" class="mb-12 scroll-mt-4">
-				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">ポートフォリオ / 作品</h2>
+				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900" data-i18n="section.portfolio">{t('section.portfolio')}</h2>
 				<div class="flex flex-col gap-4">
 					{portfolio.map((item) => (
 						<div class="border border-gray-200 rounded-xl p-5 bg-white hover:shadow-md transition-shadow">
 							<div class="flex items-start justify-between gap-3 mb-2">
-								<h3 class="text-base font-semibold text-gray-900">{item.title}</h3>
+								<h3 class="text-base font-semibold text-gray-900" data-i18n={`portfolio.${item.key}.title`}>{t(`portfolio.${item.key}.title`)}</h3>
 								{item.url && (
 									<a
 										href={item.url}
 										target="_blank"
 										rel="noopener noreferrer"
 										class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-white bg-indigo-500 hover:bg-indigo-600 hover:-translate-y-0.5 transition-all shrink-0"
-										aria-label={`${item.title} を新しいタブで開く`}
+										aria-label={t(`portfolio.${item.key}.openAria`)}
+										data-i18n-aria-label={`portfolio.${item.key}.openAria`}
 									>
 										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5" aria-hidden="true" focusable="false">
 											<path d="M14 3v2H7v14h14v-7h2v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8zm7 0v7h-2V6.413l-7.293 7.294-1.414-1.414L19.585 5H15V3h6z"/>
 										</svg>
-										リンク
+										<span data-i18n="portfolio.link">{t('portfolio.link')}</span>
 									</a>
 								)}
 							</div>
-							<p class="text-sm text-gray-600 leading-relaxed mb-3">{item.description}</p>
+							<p class="text-sm text-gray-600 leading-relaxed mb-3" data-i18n={`portfolio.${item.key}.description`}>{t(`portfolio.${item.key}.description`)}</p>
 							{item.techs.length > 0 && (
 								<div>
-									<p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">使用技術</p>
+									<p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2" data-i18n="portfolio.techs">{t('portfolio.techs')}</p>
 									<ul class="flex flex-wrap gap-2 list-none p-0 m-0">
 										{item.techs.map((tech) => (
 											<SkillBadge name={tech} />
+										))}
+									</ul>
+								</div>
+							)}
+							{item.posts && item.posts.length > 0 && (
+								<div class="mt-4 pt-4 border-t border-gray-100">
+									<p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2" data-i18n="portfolio.latestPosts">{t('portfolio.latestPosts')}</p>
+									<ul class="flex flex-col gap-2 list-none p-0 m-0">
+										{item.posts.map((post) => (
+											<li>
+												<a
+													href={post.url}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="group flex gap-3 items-start rounded-lg border border-gray-100 bg-gray-50 p-3 hover:bg-indigo-50 hover:border-indigo-200 transition-colors"
+												>
+													{post.thumb ? (
+														<img
+															src={post.thumb}
+															alt=""
+															width="96"
+															height="64"
+															loading="lazy"
+															decoding="async"
+															class="w-24 h-16 object-cover rounded-md shrink-0 bg-gray-200"
+														/>
+													) : (
+														<div class="w-24 h-16 rounded-md shrink-0 bg-gray-200" aria-hidden="true"></div>
+													)}
+													<div class="min-w-0 flex-1">
+														<time datetime={post.date} class="block text-xs text-gray-400 mb-0.5" data-i18n-date>{formatDate(post.date)}</time>
+														<p class="text-sm font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors leading-snug mb-1">{post.title}</p>
+														<p class="text-xs text-gray-500 leading-relaxed line-clamp-2">{post.excerpt}</p>
+													</div>
+												</a>
+											</li>
 										))}
 									</ul>
 								</div>
@@ -180,7 +283,7 @@ const skills = [
 
 			<!-- SNSセクション（技術タブ） -->
 			<section id="sns-tech" class="mb-12 scroll-mt-4">
-				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">各リンク</h2>
+				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900" data-i18n="section.links">{t('section.links')}</h2>
 				<div class="flex flex-wrap gap-3">
 					<a
 						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-black hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
@@ -226,36 +329,36 @@ const skills = [
 		<div id="content-general" role="tabpanel" aria-labelledby="tab-general">
 			<!-- 趣味セクション -->
 			<section id="hobby" class="mb-12 scroll-mt-4">
-				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">趣味</h2>
+				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900" data-i18n="section.hobby">{t('section.hobby')}</h2>
 				<ul class="list-disc list-inside flex flex-col gap-1 text-gray-600 leading-relaxed">
-					<li>読書</li>
-					<li>水族館巡り</li>
-					<li>ゲーム</li>
-					<li>社寺巡り</li>
-					<li>フィルムカメラ</li>
+					<li data-i18n="hobby.reading">{t('hobby.reading')}</li>
+					<li data-i18n="hobby.aquarium">{t('hobby.aquarium')}</li>
+					<li data-i18n="hobby.game">{t('hobby.game')}</li>
+					<li data-i18n="hobby.shrine">{t('hobby.shrine')}</li>
+					<li data-i18n="hobby.filmCamera">{t('hobby.filmCamera')}</li>
 				</ul>
 			</section>
 
 			<!-- 撮影機材セクション -->
 			<section id="camera" class="mb-12 scroll-mt-4">
-				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">撮影機材</h2>
+				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900" data-i18n="section.camera">{t('section.camera')}</h2>
 				<div class="flex flex-col gap-3">
 					<div class="border border-gray-200 rounded-xl p-4 bg-white">
-						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">スマホ</h3>
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1" data-i18n="camera.smartphone">{t('camera.smartphone')}</h3>
 						<ul class="list-disc list-inside text-gray-700">
 							<li>iPhone 15 Pro</li>
 							<li>Google Pixel 7 Pro</li>
 						</ul>
 					</div>
 					<div class="border border-gray-200 rounded-xl p-4 bg-white">
-						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">デジカメ</h3>
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1" data-i18n="camera.digital">{t('camera.digital')}</h3>
 						<ul class="list-disc list-inside text-gray-700">
 							<li>KODAK PIXPRO C1</li>
 							<li>KODAK CHARMERA Keychain Digital Camera</li>
 						</ul>
 					</div>
 					<div class="border border-gray-200 rounded-xl p-4 bg-white">
-						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">フィルムカメラ</h3>
+						<h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1" data-i18n="camera.film">{t('camera.film')}</h3>
 						<ul class="list-disc list-inside text-gray-700">
 							<li>PENTAX Zoom 60 DATE</li>
 							<li>PENTAX ESPIO 115</li>
@@ -268,7 +371,7 @@ const skills = [
 
 			<!-- SNSセクション（一般タブ） -->
 			<section id="sns-general" class="mb-12 scroll-mt-4">
-				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900">各リンク</h2>
+				<h2 class="text-xl sm:text-2xl font-bold mb-4 pb-2 border-b-2 border-gray-200 text-gray-900" data-i18n="section.links">{t('section.links')}</h2>
 				<div class="flex flex-wrap gap-3">
 					<a
 						class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-black hover:opacity-85 hover:-translate-y-0.5 transition-all sm:w-auto w-full justify-center"
@@ -304,7 +407,7 @@ const skills = [
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true" focusable="false">
 							<path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/>
 						</svg>
-						ナストンの記録
+						<span data-i18n="links.photoGallery">{t('links.photoGallery')}</span>
 					</a>
 				</div>
 			</section>
@@ -313,8 +416,91 @@ const skills = [
 </div>
 
 <script>
+	import {
+		translations,
+		dateLocales,
+		isLang,
+		DEFAULT_LANG,
+		LANG_STORAGE_KEY,
+		type Lang,
+	} from '../data/i18n';
+
 	type TabName = 'general' | 'tech';
 
+	// ===== 言語切り替え =====
+	const langButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.lang-btn[data-lang]'));
+
+	const LANG_ACTIVE_CLASSES = ['bg-white', 'text-indigo-600', 'shadow-sm'];
+	const LANG_INACTIVE_CLASSES = ['text-gray-500', 'hover:text-gray-700'];
+
+	const readStoredLang = (): Lang | null => {
+		try {
+			const stored = localStorage.getItem(LANG_STORAGE_KEY);
+			return isLang(stored) ? stored : null;
+		} catch {
+			return null;
+		}
+	};
+
+	const storeLang = (lang: Lang) => {
+		try {
+			localStorage.setItem(LANG_STORAGE_KEY, lang);
+		} catch {
+			// プライベートモード等で localStorage が使えない場合は無視
+		}
+	};
+
+	const applyLang = (lang: Lang) => {
+		const dict: Record<string, string> = translations[lang];
+
+		document.documentElement.lang = lang;
+		document.title = dict['meta.title'] ?? document.title;
+
+		document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((el) => {
+			const value = dict[el.dataset.i18n ?? ''];
+			if (value !== undefined) el.textContent = value;
+		});
+		document.querySelectorAll<HTMLElement>('[data-i18n-aria-label]').forEach((el) => {
+			const value = dict[el.dataset.i18nAriaLabel ?? ''];
+			if (value !== undefined) el.setAttribute('aria-label', value);
+		});
+		document.querySelectorAll<HTMLImageElement>('[data-i18n-alt]').forEach((el) => {
+			const value = dict[el.dataset.i18nAlt ?? ''];
+			if (value !== undefined) el.alt = value;
+		});
+		document.querySelectorAll<HTMLTimeElement>('time[data-i18n-date][datetime]').forEach((el) => {
+			const date = new Date(el.dateTime);
+			if (!Number.isNaN(date.getTime())) {
+				el.textContent = date.toLocaleDateString(dateLocales[lang], { year: 'numeric', month: 'long', day: 'numeric' });
+			}
+		});
+
+		langButtons.forEach((btn) => {
+			const isActive = btn.dataset.lang === lang;
+			LANG_ACTIVE_CLASSES.forEach((c) => btn.classList.toggle(c, isActive));
+			LANG_INACTIVE_CLASSES.forEach((c) => btn.classList.toggle(c, !isActive));
+			btn.setAttribute('aria-pressed', String(isActive));
+		});
+	};
+
+	if (langButtons.length > 0) {
+		langButtons.forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const lang = btn.dataset.lang;
+				if (!isLang(lang)) return;
+				applyLang(lang);
+				storeLang(lang);
+			});
+		});
+
+		// 前回選択した言語を復元（HTML は日本語で描画済みなので、異なる場合のみ差し替える）
+		const initialLang = readStoredLang() ?? DEFAULT_LANG;
+		if (initialLang !== DEFAULT_LANG) {
+			applyLang(initialLang);
+		}
+	}
+
+	// ===== タブ切り替え =====
 	const tabGeneral = document.getElementById('tab-general');
 	const tabTech = document.getElementById('tab-tech');
 	const contentGeneral = document.getElementById('content-general');
