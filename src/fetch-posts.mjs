@@ -4,14 +4,39 @@ const POSTS_FILE = 'src/data/posts.json';
 const API_URL =
 	process.env.WORDPRESS_POSTS_API_URL ||
 	'https://nasuton.net/blog/wp-json/wp/v2/posts?per_page=3&_embed';
+const RSS_URL = process.env.WORDPRESS_POSTS_RSS_URL || 'https://nasuton.net/blog/feed/';
+const USER_AGENT =
+	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+async function checkRssAccess() {
+	// Diagnose API-specific restrictions from the same runner; do not update posts from RSS.
+	try {
+		console.log(`[RSS diagnostic] Checking access to ${RSS_URL}...`);
+		const res = await fetch(RSS_URL, {
+			headers: {
+				'User-Agent': USER_AGENT,
+				'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+			},
+			signal: AbortSignal.timeout(10000),
+		});
+		console.log(`[RSS diagnostic] HTTP status: ${res.status} ${res.statusText}`);
+		console.log(`[RSS diagnostic] Content-Type: ${res.headers.get('content-type') || '(missing)'}`);
+		const body = await res.text();
+		const limit = 2000;
+		console.log(
+			`[RSS diagnostic] Response body: ${JSON.stringify(body.slice(0, limit))}${body.length > limit ? ' (truncated to 2000 characters)' : ''}`,
+		);
+	} catch (error) {
+		console.warn(`[WARN] RSS diagnostic failed: ${error.message}`);
+	}
+}
 
 async function fetchLatestPosts() {
 	try {
 		console.log(`Fetching latest posts from ${API_URL}...`);
 		const res = await fetch(API_URL, {
 			headers: {
-				'User-Agent':
-					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+				'User-Agent': USER_AGENT,
 				'Accept': 'application/json, text/plain, */*',
 			},
 			signal: AbortSignal.timeout(10000),
@@ -54,6 +79,7 @@ async function fetchLatestPosts() {
 		console.log(`Successfully fetched and saved ${posts.length} posts to ${POSTS_FILE}`);
 	} catch (error) {
 		console.warn(`[WARN] Failed to fetch latest posts: ${error.message}`);
+		await checkRssAccess();
 
 		// If posts.json already exists, preserve it so builds continue seamlessly
 		try {
