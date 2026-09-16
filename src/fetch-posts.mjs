@@ -17,12 +17,22 @@ async function fetchLatestPosts() {
 			signal: AbortSignal.timeout(10000),
 		});
 
-		if (!res.ok) {
-			throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
-		}
-
 		const contentType = res.headers.get('content-type') || '';
-		if (!contentType.includes('application/json')) {
+		if (!res.ok || !contentType.includes('application/json')) {
+			console.warn(`[WARN] Response Content-Type: ${contentType || '(missing)'}`);
+			try {
+				const body = await res.text();
+				// Keep error pages readable without flooding GitHub Actions logs.
+				const limit = 2000;
+				console.warn(
+					`[WARN] Response body: ${JSON.stringify(body.slice(0, limit))}${body.length > limit ? ' (truncated to 2000 characters)' : ''}`,
+				);
+			} catch (error) {
+				console.warn(`[WARN] Could not read response body: ${error.message}`);
+			}
+			if (!res.ok) {
+				throw new Error(`HTTP error ${res.status}: ${res.statusText}`);
+			}
 			throw new Error(`Unexpected Content-Type: ${contentType} (expected application/json)`);
 		}
 

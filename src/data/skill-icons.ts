@@ -26,9 +26,11 @@ const skillMap: Readonly<Record<string, string>> = {
 	'css3': 'siCss',
 	'git': 'siGit',
 	'github': 'siGithub',
+	'github pages': 'siGithubpages',
 	'docker': 'siDocker',
 	'rust': 'siRust',
 	'go': 'siGo',
+	'webassembly': 'siWebassembly',
 	'java': 'siOpenjdk',
 	'c++': 'siCplusplus',
 	'php': 'siPhp',
@@ -74,6 +76,7 @@ const skillMap: Readonly<Record<string, string>> = {
 	'unreal': 'siUnrealengine',
 	'wordpress': 'siWordpress',
 	'gin': 'siGin',
+	'apache': 'siApache',
 };
 
 /** simple-icons に収録されていないスキル用のカスタムアイコン */

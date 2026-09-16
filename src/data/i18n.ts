@@ -51,6 +51,14 @@ export const translations = {
 		'portfolio.password.description':
 			'安全なパスワードを生成するためのシンプルなツール。フロントエンドをReact、バックエンドをGo言語ginフレームワークで構築しています。',
 		'portfolio.password.openAria': 'パスワード生成ツール を新しいタブで開く',
+		'portfolio.lottery.title': '宝くじ予想',
+		'portfolio.lottery.description':
+			'各宝くじに対して、様々な予測パターンを用いて、次回数字を予測します。※本ページで公開している予想情報は、当せんを保証するものではありません。',
+		'portfolio.lottery.openAria': '宝くじ予想 を新しいタブで開く',
+		'portfolio.tools.title': 'Go × WebAssembly Tools',
+		'portfolio.tools.description':
+			'Go で書いたロジックをブラウザ上で直接実行しています。入力内容がサーバーに送信されることはありません。',
+		'portfolio.tools.openAria': 'Go × WebAssembly Tools を新しいタブで開く',
 
 		// 趣味
 		'hobby.reading': '読書',
@@ -109,6 +117,14 @@ export const translations = {
 		'portfolio.password.description':
 			'A simple tool for generating secure passwords. The frontend is built with React and the backend with Go (Gin framework).',
 		'portfolio.password.openAria': 'Open Password Generator in a new tab',
+		'portfolio.lottery.title': 'Lottery Predictions',
+		'portfolio.lottery.description':
+			'Predicts the numbers for the next draw of each lottery using various prediction patterns. Predictions published on this page do not guarantee a win.',
+		'portfolio.lottery.openAria': 'Open Lottery Predictions in a new tab',
+		'portfolio.tools.title': 'Go × WebAssembly Tools',
+		'portfolio.tools.description':
+			'Runs logic written in Go directly in your browser. Your input is never sent to a server.',
+		'portfolio.tools.openAria': 'Open Go × WebAssembly Tools in a new tab',
 
 		// 趣味
 		'hobby.reading': 'Reading',
