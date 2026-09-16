@@ -17,15 +17,34 @@ async function checkRssAccess() {
 				'User-Agent': USER_AGENT,
 				'Accept': 'application/rss+xml, application/xml, text/xml, */*',
 			},
-			signal: AbortSignal.timeout(10000),
+			signal: AbortSignal.timeout(30000),
 		});
 		console.log(`[RSS diagnostic] HTTP status: ${res.status} ${res.statusText}`);
 		console.log(`[RSS diagnostic] Content-Type: ${res.headers.get('content-type') || '(missing)'}`);
-		const body = await res.text();
 		const limit = 2000;
-		console.log(
-			`[RSS diagnostic] Response body: ${JSON.stringify(body.slice(0, limit))}${body.length > limit ? ' (truncated to 2000 characters)' : ''}`,
-		);
+		const reader = res.body?.getReader();
+		const decoder = new TextDecoder();
+		let body = '';
+		try {
+			// Stop after the preview instead of waiting for the entire RSS feed.
+			while (reader && body.length < limit) {
+				const { done, value } = await reader.read();
+				if (done) {
+					body = (body + decoder.decode()).slice(0, limit);
+					break;
+				}
+				body = (body + decoder.decode(value, { stream: true })).slice(0, limit);
+			}
+		} finally {
+			// Preserve any bytes received even if reading the body times out.
+			console.log(
+				`[RSS diagnostic] Response body: ${JSON.stringify(body)}${body.length >= limit ? ' (stopped after 2000 characters)' : ''}`,
+			);
+			if (reader) {
+				await reader.cancel().catch(() => {});
+				reader.releaseLock();
+			}
+		}
 	} catch (error) {
 		console.warn(`[WARN] RSS diagnostic failed: ${error.message}`);
 	}
