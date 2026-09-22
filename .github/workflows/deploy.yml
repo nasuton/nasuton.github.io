@@ -48,6 +48,8 @@ jobs:
         run: npm run fetch-posts
 
       - name: Build with Astro
+        env:
+          PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
         run: npm run build
 
       - name: Upload artifact
