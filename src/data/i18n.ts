@@ -59,6 +59,10 @@ export const translations = {
 		'portfolio.tools.description':
 			'Go で書いたロジックをブラウザ上で直接実行しています。入力内容がサーバーに送信されることはありません。',
 		'portfolio.tools.openAria': 'Go × WebAssembly Tools を新しいタブで開く',
+		'portfolio.analytics.title': 'ナストンのまとめ アナリティクス',
+		'portfolio.analytics.description':
+			'GA4で取得したアナリティクス情報をグラフとして表示したサイトとなります',
+		'portfolio.analytics.openAria': 'ナストンのまとめ アナリティクス を新しいタブで開く',
 
 		// 趣味
 		'hobby.reading': '読書',
@@ -125,6 +129,10 @@ export const translations = {
 		'portfolio.tools.description':
 			'Runs logic written in Go directly in your browser. Your input is never sent to a server.',
 		'portfolio.tools.openAria': 'Open Go × WebAssembly Tools in a new tab',
+		'portfolio.analytics.title': 'Nasuton no Matome Analytics',
+		'portfolio.analytics.description':
+			'A website that displays analytics data collected with GA4 as charts.',
+		'portfolio.analytics.openAria': 'Open Nasuton no Matome Analytics in a new tab',
 
 		// 趣味
 		'hobby.reading': 'Reading',

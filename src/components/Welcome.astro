@@ -18,7 +18,7 @@ interface BlogPost {
 
 interface PortfolioItem {
 	/** i18n キーのプレフィックス（portfolio.<key>.title など） */
-	key: 'blog' | 'password' | 'lottery' | 'tools';
+	key: 'blog' | 'password' | 'lottery' | 'tools' | 'analytics';
 	url?: string;
 	techs: string[];
 	posts?: BlogPost[];
@@ -66,6 +66,11 @@ const portfolio: PortfolioItem[] = [
 		key: 'tools',
 		url: 'https://nasuton.github.io/ToolCollection/',
 		techs: ['Go', 'WebAssembly', 'React', 'TypeScript', 'Vite'],
+	},
+	{
+		key: 'analytics',
+		url: 'https://nasuton.github.io/nasuton-analytics-dashboard/',
+		techs: ['C#', 'JavaScript', 'SQL'],
 	},
 ];
 
