@@ -32,6 +32,7 @@ export const translations = {
 		'section.profile': 'プロフィール',
 		'section.hobby': '趣味',
 		'section.camera': '撮影機材',
+		'section.works': '作品紹介',
 		'section.links': '各リンク',
 		'section.skills': '触ったことのあるもの',
 		'section.portfolio': 'ポートフォリオ / 作品',
@@ -78,6 +79,8 @@ export const translations = {
 
 		// リンク
 		'links.photoGallery': 'ナストンの記録',
+		'works.openAria': 'ナストンの記録 を新しいタブで開く',
+		'works.empty': '最新記事はブログでご覧いただけます。',
 	},
 	en: {
 		'meta.title': 'Nasuton | About Me',
@@ -102,6 +105,7 @@ export const translations = {
 		'section.profile': 'Profile',
 		'section.hobby': 'Hobbies',
 		'section.camera': 'Camera Gear',
+		'section.works': 'Featured Work',
 		'section.links': 'Links',
 		'section.skills': 'Technologies I Have Used',
 		'section.portfolio': 'Portfolio / Works',
@@ -148,6 +152,8 @@ export const translations = {
 
 		// リンク
 		'links.photoGallery': "Nasuton's Photo Log",
+		'works.openAria': "Open Nasuton's Photo Log in a new tab",
+		'works.empty': 'Visit the blog to see the latest posts.',
 	},
 } as const satisfies Record<Lang, Record<string, string>>;
 

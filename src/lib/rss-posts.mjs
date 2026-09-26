@@ -1,11 +1,12 @@
 import sax from 'sax';
 
 // WordPress lists its newest posts first. Parse complete items, not a byte preview.
-export async function readRssPosts(stream) {
+export async function readRssPosts(stream, { limit = 3, contentImages = false } = {}) {
+	if (!Number.isInteger(limit) || limit < 1) throw new Error('RSS limit must be a positive integer');
 	if (!stream) throw new Error('RSS response has no body');
 	const posts = [];
 	const stack = [];
-	const complete = Symbol('three complete RSS items');
+	const complete = Symbol('requested RSS items complete');
 	const parser = sax.parser(true, { strictEntities: true });
 	let item = null;
 
@@ -13,7 +14,7 @@ export async function readRssPosts(stream) {
 	parser.onopentag = (node) => {
 		stack.push(node.name);
 		if (stack.join('/') === 'rss/channel/item') {
-			item = { title: '', link: '', pubDate: '', description: '', thumb: null };
+			item = { title: '', link: '', pubDate: '', description: '', content: '', thumb: null };
 		} else if (item && stack.length === 4 && node.name === 'media:thumbnail') {
 			item.thumb = node.attributes.url || null;
 		}
@@ -22,6 +23,9 @@ export async function readRssPosts(stream) {
 		const field = stack.at(-1);
 		if (item && stack.length === 4 && ['title', 'link', 'pubDate', 'description'].includes(field)) {
 			item[field] += text;
+		} else if (contentImages && item && stack.length === 4 && field === 'content:encoded') {
+			// Only keep enough HTML to locate a photo; never save the article body.
+			item.content = (item.content + text).slice(0, 256000);
 		}
 	};
 	parser.ontext = collectText;
@@ -38,10 +42,10 @@ export async function readRssPosts(stream) {
 				url: url.href,
 				date: date.toISOString(),
 				excerpt: item.description.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 100),
-				thumb: item.thumb,
+				thumb: item.thumb || (contentImages ? findContentImage(item.content, url.href) : null),
 			});
 			item = null;
-			if (posts.length === 3) throw complete;
+			if (posts.length === limit) throw complete;
 		}
 		stack.pop();
 	};
@@ -65,4 +69,21 @@ export async function readRssPosts(stream) {
 	}
 	if (posts.length === 0) throw new Error('RSS feed contains no posts');
 	return posts;
+}
+
+function findContentImage(html, baseUrl) {
+	const images = html.match(/<img\b[^>]*>/gi) || [];
+	// Prefer article/gallery photos over thumbnails in related-article links.
+	const preferred = images.filter((tag) => /\bclass\s*=\s*["'][^"']*\b(?:st-gallery-slide__image|wp-image-\d+)\b/i.test(tag));
+	for (const tag of [...preferred, ...images]) {
+		const src = tag.match(/\bsrc\s*=\s*(["'])(.*?)\1/i)?.[2];
+		if (!src) continue;
+		try {
+			const url = new URL(src.replace(/&amp;/g, '&'), baseUrl);
+			if (['http:', 'https:'].includes(url.protocol)) return url.href;
+		} catch {
+			// Ignore malformed image URLs and try the next image.
+		}
+	}
+	return null;
 }

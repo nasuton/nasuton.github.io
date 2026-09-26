@@ -6,6 +6,8 @@ const API_URL =
 	process.env.WORDPRESS_POSTS_API_URL ||
 	'https://nasuton.net/blog/wp-json/wp/v2/posts?per_page=3&_embed';
 const RSS_URL = process.env.WORDPRESS_POSTS_RSS_URL || 'https://nasuton.net/blog/feed/';
+const PHOTO_POSTS_FILE = 'src/data/photo-posts.json';
+const PHOTO_RSS_URL = process.env.PHOTO_POSTS_RSS_URL || 'https://nasuton.net/photo_gallery/feed/';
 const USER_AGENT =
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -57,9 +59,9 @@ async function fetchApiPosts() {
 	}));
 }
 
-async function fetchRssPosts() {
-	console.log(`[RSS] Fetching latest posts from ${RSS_URL}...`);
-	const res = await fetch(RSS_URL, {
+async function fetchRssPosts({ url = RSS_URL, file = POSTS_FILE, limit = 3, contentImages = false } = {}) {
+	console.log(`[RSS] Fetching latest ${limit} posts from ${url}...`);
+	const res = await fetch(url, {
 		headers: { 'User-Agent': USER_AGENT, 'Accept': 'application/rss+xml, application/xml, text/xml, */*' },
 		signal: AbortSignal.timeout(60000),
 	});
@@ -70,10 +72,10 @@ async function fetchRssPosts() {
 		await logResponsePreview(res, 'RSS');
 		throw new Error(`RSS HTTP ${res.status} ${res.statusText}; Content-Type: ${contentType || '(missing)'}`);
 	}
-	const posts = await readRssPosts(res.body);
+	const posts = await readRssPosts(res.body, { limit, contentImages });
 	// Standard WordPress feeds may omit featured images; retain known thumbnails by URL.
 	try {
-		const previous = JSON.parse(await fs.readFile(POSTS_FILE, 'utf-8'));
+		const previous = JSON.parse(await fs.readFile(file, 'utf-8'));
 		for (const post of posts) {
 			post.thumb ??= previous.find((old) => old.url === post.url)?.thumb ?? null;
 		}
@@ -100,15 +102,32 @@ async function fetchLatestPosts() {
 		console.log(`Successfully fetched and saved ${posts.length} posts from ${source} to ${POSTS_FILE}`);
 	} catch (error) {
 		console.warn(`[WARN] Failed to fetch latest posts: ${error.message}`);
-		try {
-			await fs.access(POSTS_FILE);
-			console.log(`Using existing ${POSTS_FILE} as fallback.`);
-		} catch {
-			console.log(`No existing ${POSTS_FILE} found. Creating fallback empty file.`);
-			await fs.mkdir('src/data', { recursive: true });
-			await fs.writeFile(POSTS_FILE, '[]\n', 'utf-8');
-		}
+		await preserveExistingPosts(POSTS_FILE);
+	}
+}
+
+async function preserveExistingPosts(file) {
+	try {
+		await fs.access(file);
+		console.log(`Using existing ${file} as fallback.`);
+	} catch {
+		console.log(`No existing ${file} found. Creating fallback empty file.`);
+		await fs.mkdir('src/data', { recursive: true });
+		await fs.writeFile(file, '[]\n', 'utf-8');
+	}
+}
+
+async function fetchLatestPhotoPosts() {
+	try {
+		const posts = await fetchRssPosts({ url: PHOTO_RSS_URL, file: PHOTO_POSTS_FILE, limit: 5, contentImages: true });
+		await fs.mkdir('src/data', { recursive: true });
+		await fs.writeFile(PHOTO_POSTS_FILE, JSON.stringify(posts, null, 2) + '\n', 'utf-8');
+		console.log(`Successfully fetched and saved ${posts.length} photo posts from RSS to ${PHOTO_POSTS_FILE}`);
+	} catch (error) {
+		console.warn(`[WARN] Failed to fetch photo posts: ${error.message}`);
+		await preserveExistingPosts(PHOTO_POSTS_FILE);
 	}
 }
 
 await fetchLatestPosts();
+await fetchLatestPhotoPosts();

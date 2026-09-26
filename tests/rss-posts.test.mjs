@@ -76,3 +76,28 @@ test('does not parse unnecessary data after the third item', async () => {
 	const posts = await readRssPosts(body(start + [1, 2, 3].map((n) => item(n)).join('') + '<malformed'));
 	assert.equal(posts.length, 3);
 });
+
+test('photo feeds stop after five complete items, while the default remains three', { timeout: 1000 }, async () => {
+	const xml = start + [1, 2, 3, 4, 5].map((n) => item(n)).join('');
+	let cancelled = false;
+	const stream = new ReadableStream({
+		start(controller) { controller.enqueue(new TextEncoder().encode(xml)); },
+		cancel() { cancelled = true; },
+	});
+	assert.equal((await readRssPosts(stream, { limit: 5 })).length, 5);
+	assert.equal(cancelled, true);
+	assert.equal((await readRssPosts(body(xml))).length, 3);
+});
+
+test('photo thumbnails prefer gallery images over related-article thumbnails', async () => {
+	const html = '<img src="https://example.com/related.jpg"><img class="st-gallery-slide__image" src="/photo.jpg?a=1&amp;b=2">';
+	const xml = feed(item(1).replace('<p>本文</p>', html));
+	assert.equal((await readRssPosts(body(xml), { contentImages: true }))[0].thumb, 'https://example.com/photo.jpg?a=1&b=2');
+	assert.equal((await readRssPosts(body(xml)))[0].thumb, null);
+});
+
+test('a feed with fewer than five items returns available posts and rejects a truncated fifth item', async () => {
+	assert.equal((await readRssPosts(body(feed(item(1))), { limit: 5 })).length, 1);
+	await assert.rejects(readRssPosts(body(start + [1, 2, 3, 4].map((n) => item(n)).join('') + '<item>'), { limit: 5 }));
+	await assert.rejects(readRssPosts(body(feed(item(1))), { limit: 0 }), /positive integer/);
+});

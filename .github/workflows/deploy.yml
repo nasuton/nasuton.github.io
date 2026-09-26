@@ -44,8 +44,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ブログの最新記事を取得して src/data/posts.json を生成
-      - name: Fetch latest blog posts
+      # 技術ブログ3件・写真ブログ5件を取得（失敗時は各ブログの既存データを保持）
+      - name: Fetch latest tech and photo blog posts
         run: npm run fetch-posts
 
       - name: Build with Astro

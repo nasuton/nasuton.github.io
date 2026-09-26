@@ -1,5 +1,21 @@
 # Astro Starter Kit: Basics
 
+## 最新記事の自動更新
+
+`npm run fetch-posts` で、技術ブログの最新3件を `src/data/posts.json`、
+写真ブログの最新5件を `src/data/photo-posts.json` に保存します。
+写真ブログは `https://nasuton.net/photo_gallery/feed/` のRSSから取得し、
+一般タブの「撮影機材」と「各リンク」の間にある【作品紹介】に表示します。
+タイトル・リンク・公開日・短い説明・取得できる画像を保存し、記事本文は保存しません。
+
+GitHub Actionsではmainへのpush、毎週火曜9:10（日本時間）、手動実行時に
+両方の記事データを更新してからビルドします。取得に失敗したブログは既存のJSONを保持します。
+初回取得にも失敗し、JSONがない場合は空配列を作成してビルドを続行します。
+GitHub Actions内の更新はデプロイ用で、JSONをリポジトリへ自動コミットしません。
+
+写真ブログの取得先は環境変数 `PHOTO_POSTS_RSS_URL` で変更できます。
+取得・解析・失敗時のデータ保持は `npm run test:posts` で検証できます。
+
 ## Google Tag Manager
 
 本番ビルドではコンテナ `GTM-NNMQ5QFQ` を読み込みます。
