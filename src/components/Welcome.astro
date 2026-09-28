@@ -626,7 +626,6 @@ const skills = [
 	// SSR では全件を出力し、JS 有効時のみ 4 件目以降を隠す（プログレッシブエンハンスメント）
 	const portfolioToggle = document.getElementById('portfolio-toggle') as HTMLButtonElement | null;
 	const portfolioToggleLabel = document.getElementById('portfolio-toggle-label');
-	const portfolioSection = document.getElementById('portfolio');
 	const portfolioExtras = Array.from(document.querySelectorAll<HTMLElement>('[data-portfolio-extra]'));
 
 	if (portfolioToggle && portfolioToggleLabel && portfolioExtras.length > 0) {
@@ -652,10 +651,13 @@ const skills = [
 		portfolioToggle.addEventListener('click', () => {
 			const expanded = portfolioToggle.getAttribute('aria-expanded') !== 'true';
 			setPortfolioExpanded(expanded);
-			if (!expanded && portfolioSection && portfolioSection.getBoundingClientRect().top < 0) {
-				// 折りたたみでページが縮み、ボタンが画面外へ飛ばないようセクション見出しへ戻す
-				const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-				portfolioSection.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+			if (!expanded) {
+				// 折りたたみでページが縮み、押したボタンが画面外へ出た場合だけ見える位置まで戻す
+				const rect = portfolioToggle.getBoundingClientRect();
+				if (rect.top < 0 || rect.bottom > window.innerHeight) {
+					const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+					portfolioToggle.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
+				}
 			}
 			// 展開・折りたたみでページ高が変わるのでボタンの表示判定をやり直す
 			scheduleBackToTop();
