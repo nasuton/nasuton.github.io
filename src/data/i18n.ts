@@ -17,6 +17,7 @@ export const translations = {
 		'header.tagline': '熱しやすく冷めやすいプログラマー',
 		'header.profileAlt': 'ナストンのプロフィール画像',
 		'header.langSwitch': '言語切り替え',
+		'backToTop.label': 'ページの先頭に戻る',
 
 		// タブ
 		'tab.ariaLabel': '表示内容の切り替え',
@@ -105,6 +106,7 @@ export const translations = {
 		'header.tagline': 'A programmer who gets hooked quickly and bored just as fast',
 		'header.profileAlt': "Nasuton's profile picture",
 		'header.langSwitch': 'Switch language',
+		'backToTop.label': 'Back to top',
 
 		// タブ
 		'tab.ariaLabel': 'Switch content',
