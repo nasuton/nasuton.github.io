@@ -36,6 +36,7 @@ export const translations = {
 		'section.links': '各リンク',
 		'section.skills': '触ったことのあるもの',
 		'section.portfolio': 'ポートフォリオ / 作品',
+		'section.articles': '記事をさがす',
 
 		// プロフィール
 		'profile.line1': '気になったものはとりあえず触ってみる。現役プログラマー',
@@ -64,6 +65,20 @@ export const translations = {
 		'portfolio.analytics.description':
 			'GA4で取得したアナリティクス情報をグラフとして表示したサイトとなります',
 		'portfolio.analytics.openAria': 'ナストンのまとめ アナリティクス を新しいタブで開く',
+
+		// 記事エクスプローラ（{count} は件数に置換される）
+		'articles.description':
+			'ブログ全{count}記事を TF-IDF + コサイン類似度で解析し、内容の近い記事を結び付けています。インデックスは GitHub Actions のビルド時に毎回再構築されます。',
+		'articles.searchLabel': '記事タイトルで絞り込む',
+		'articles.searchPlaceholder': 'キーワードで絞り込む（例: Python）',
+		'articles.categoryLabel': 'カテゴリで絞り込む',
+		'articles.allCategories': 'すべてのカテゴリ',
+		'articles.count': '{count} 件を表示中',
+		'articles.read': 'この記事を読む →',
+		'articles.related': '内容の近い記事',
+		'articles.similarity': '類似度',
+		'articles.noRelated': '内容の近い記事は見つかりませんでした。',
+		'articles.noResults': '該当する記事がありませんでした。',
 
 		// 趣味
 		'hobby.reading': '読書',
@@ -109,6 +124,7 @@ export const translations = {
 		'section.links': 'Links',
 		'section.skills': 'Technologies I Have Used',
 		'section.portfolio': 'Portfolio / Works',
+		'section.articles': 'Explore Blog Posts',
 
 		// プロフィール
 		'profile.line1': 'I try out anything that catches my interest. Working programmer.',
@@ -137,6 +153,20 @@ export const translations = {
 		'portfolio.analytics.description':
 			'A website that displays analytics data collected with GA4 as charts.',
 		'portfolio.analytics.openAria': 'Open Nasuton no Matome Analytics in a new tab',
+
+		// 記事エクスプローラ（{count} は件数に置換される）
+		'articles.description':
+			'All {count} blog posts are analysed with TF-IDF + cosine similarity to link posts with similar content. The index is rebuilt by GitHub Actions on every build.',
+		'articles.searchLabel': 'Filter by post title',
+		'articles.searchPlaceholder': 'Filter by keyword (e.g. Python)',
+		'articles.categoryLabel': 'Filter by category',
+		'articles.allCategories': 'All categories',
+		'articles.count': 'Showing {count} posts',
+		'articles.read': 'Read this post →',
+		'articles.related': 'Similar posts',
+		'articles.similarity': 'Similarity',
+		'articles.noRelated': 'No similar posts were found.',
+		'articles.noResults': 'No posts matched your filters.',
 
 		// 趣味
 		'hobby.reading': 'Reading',

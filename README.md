@@ -16,6 +16,19 @@ GitHub Actions内の更新はデプロイ用で、JSONをリポジトリへ自�
 写真ブログの取得先は環境変数 `PHOTO_POSTS_RSS_URL` で変更できます。
 取得・解析・失敗時のデータ保持は `npm run test:posts` で検証できます。
 
+## 関連記事インデックス（記事エクスプローラ）
+
+`npm run build-related` で、技術ブログの全記事を RSS（`feed/?paged=N`）から取得し、
+文字 2〜3-gram の TF-IDF + コサイン類似度で記事ごとに内容の近い上位5件を求めて
+`src/data/related.json` に保存します。技術タブの【記事をさがす】に表示します。
+コード・スクリプト・スタイルのブロックは類似度計算前に除去し、記事本文は保存しません
+（保存するのはタイトル・URL・公開日・カテゴリ・関連記事のURLとスコアのみ）。
+
+REST API は GitHub Actions のランナーから 403 になるため RSS を使っています。
+GitHub Actions では `fetch-posts` の後に毎回再生成し、取得に失敗した場合や
+取得件数が 140 件未満の場合は既存の `related.json` を保持します
+（しきい値は環境変数 `RELATED_POSTS_MIN_COUNT` で変更できます）。
+
 ## Google Tag Manager
 
 本番ビルドではコンテナ `GTM-NNMQ5QFQ` を読み込みます。

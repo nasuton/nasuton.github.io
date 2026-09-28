@@ -48,6 +48,11 @@ jobs:
       - name: Fetch latest tech and photo blog posts
         run: npm run fetch-posts
 
+      # 技術ブログ全記事を RSS(?paged=N) で取得し TF-IDF の関連記事インデックスを再生成
+      # （取得失敗や件数不足の場合は既存の related.json を保持）
+      - name: Build related-posts index
+        run: npm run build-related
+
       - name: Build with Astro
         env:
           PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}

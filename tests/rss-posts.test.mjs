@@ -101,3 +101,36 @@ test('a feed with fewer than five items returns available posts and rejects a tr
 	await assert.rejects(readRssPosts(body(start + [1, 2, 3, 4].map((n) => item(n)).join('') + '<item>'), { limit: 5 }));
 	await assert.rejects(readRssPosts(body(feed(item(1))), { limit: 0 }), /positive integer/);
 });
+
+test('limit: Infinity reads every item and the defaults still omit categories and bodies', async () => {
+	const xml = feed([1, 2, 3, 4, 5, 6, 7].map((n) => item(n)).join(''));
+	const posts = await readRssPosts(body(xml), { limit: Infinity });
+	assert.equal(posts.length, 7);
+	assert.deepEqual(Object.keys(posts[0]), ['title', 'url', 'date', 'excerpt', 'thumb']);
+	await assert.rejects(readRssPosts(body(xml), { limit: -Infinity }), /positive integer/);
+	await assert.rejects(readRssPosts(body(xml), { limit: 2.5 }), /positive integer/);
+});
+
+test('fullContent keeps the whole article HTML and categories collects unique <category> names', async () => {
+	const extra = '<category><![CDATA[技術]]></category><category>Python</category><category> 技術 </category><category></category>';
+	const xml = feed(item(1, extra) + item(2));
+	const posts = await readRssPosts(body(xml), { limit: Infinity, fullContent: true, categories: true });
+	assert.deepEqual(posts[0].categories, ['技術', 'Python']);
+	assert.deepEqual(posts[1].categories, []);
+	assert.equal(posts[0].content, '<p>本文</p>'.repeat(1000) + '<item>本文内の例</item>');
+	assert.equal(posts[0].thumb, null);
+
+	const onlyCategories = await readRssPosts(body(xml), { categories: true });
+	assert.deepEqual(Object.keys(onlyCategories[0]), ['title', 'url', 'date', 'excerpt', 'thumb', 'categories']);
+	const onlyContent = await readRssPosts(body(xml), { fullContent: true });
+	assert.deepEqual(Object.keys(onlyContent[0]), ['title', 'url', 'date', 'excerpt', 'thumb', 'content']);
+});
+
+test('fullContent is not truncated at 256KB while contentImages still is', async () => {
+	const big = '<p>本文</p>'.repeat(40000); // > 256KB of UTF-8 text
+	const xml = feed(item(1).replace('<p>本文</p>'.repeat(1000), big));
+	const [full] = await readRssPosts(body(xml), { fullContent: true });
+	assert.equal(full.content.length, big.length + '<item>本文内の例</item>'.length);
+	const [photo] = await readRssPosts(body(xml), { contentImages: true });
+	assert.equal(photo.content, undefined);
+});

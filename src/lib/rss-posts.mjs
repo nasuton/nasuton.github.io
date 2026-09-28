@@ -1,8 +1,10 @@
 import sax from 'sax';
 
 // WordPress lists its newest posts first. Parse complete items, not a byte preview.
-export async function readRssPosts(stream, { limit = 3, contentImages = false } = {}) {
-	if (!Number.isInteger(limit) || limit < 1) throw new Error('RSS limit must be a positive integer');
+// `limit: Infinity` reads every item in the feed (used for paged archive crawls).
+// `fullContent` keeps the whole article HTML as `content`; `categories` collects <category> names.
+export async function readRssPosts(stream, { limit = 3, contentImages = false, fullContent = false, categories = false } = {}) {
+	if (!(Number.isInteger(limit) || limit === Infinity) || limit < 1) throw new Error('RSS limit must be a positive integer');
 	if (!stream) throw new Error('RSS response has no body');
 	const posts = [];
 	const stack = [];
@@ -14,7 +16,7 @@ export async function readRssPosts(stream, { limit = 3, contentImages = false } 
 	parser.onopentag = (node) => {
 		stack.push(node.name);
 		if (stack.join('/') === 'rss/channel/item') {
-			item = { title: '', link: '', pubDate: '', description: '', content: '', thumb: null };
+			item = { title: '', link: '', pubDate: '', description: '', content: '', thumb: null, category: '', categories: [] };
 		} else if (item && stack.length === 4 && node.name === 'media:thumbnail') {
 			item.thumb = node.attributes.url || null;
 		}
@@ -23,6 +25,10 @@ export async function readRssPosts(stream, { limit = 3, contentImages = false } 
 		const field = stack.at(-1);
 		if (item && stack.length === 4 && ['title', 'link', 'pubDate', 'description'].includes(field)) {
 			item[field] += text;
+		} else if (categories && item && stack.length === 4 && field === 'category') {
+			item.category += text;
+		} else if (fullContent && item && stack.length === 4 && field === 'content:encoded') {
+			item.content += text;
 		} else if (contentImages && item && stack.length === 4 && field === 'content:encoded') {
 			// Only keep enough HTML to locate a photo; never save the article body.
 			item.content = (item.content + text).slice(0, 256000);
@@ -31,6 +37,11 @@ export async function readRssPosts(stream, { limit = 3, contentImages = false } 
 	parser.ontext = collectText;
 	parser.oncdata = collectText;
 	parser.onclosetag = () => {
+		if (categories && item && stack.length === 4 && stack.at(-1) === 'category') {
+			const name = item.category.trim();
+			if (name && !item.categories.includes(name)) item.categories.push(name);
+			item.category = '';
+		}
 		if (item && stack.join('/') === 'rss/channel/item') {
 			const date = new Date(item.pubDate.trim());
 			const url = new URL(item.link.trim());
@@ -43,6 +54,8 @@ export async function readRssPosts(stream, { limit = 3, contentImages = false } 
 				date: date.toISOString(),
 				excerpt: item.description.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 100),
 				thumb: item.thumb || (contentImages ? findContentImage(item.content, url.href) : null),
+				...(categories ? { categories: item.categories } : {}),
+				...(fullContent ? { content: item.content } : {}),
 			});
 			item = null;
 			if (posts.length === limit) throw complete;
