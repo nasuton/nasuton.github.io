@@ -68,6 +68,14 @@ export const translations = {
 		'portfolio.analytics.description':
 			'GA4で取得したアナリティクス情報をグラフとして表示したサイトとなります',
 		'portfolio.analytics.openAria': 'ナストンのまとめ アナリティクス を新しいタブで開く',
+		'portfolio.algorithm.title': 'アルゴリズム可視化ツール',
+		'portfolio.algorithm.description':
+			'8種類のソートを、同じ入力・同じ画面で1ステップずつ観察するWindows向けデスクトップアプリです。 比較・交換・書き戻しの途中経過を棒グラフで表示し、日本語でアルゴリズムの仕組みと処理状況を説明します',
+		'portfolio.algorithm.openAria': 'アルゴリズム可視化ツール を新しいタブで開く',
+		'portfolio.fileSearch.title': 'ファイル検索ツール',
+		'portfolio.fileSearch.description':
+			'Rust / eguiで作った日本語GUIツールです。フォルダ内のファイル検索から、サイズ集計、同名ファイルの抽出、SHA-256比較までをまとめています。並列処理とシングルスレッド処理を切り替え、同じ条件で結果と所要時間を確認できます',
+		'portfolio.fileSearch.openAria': 'ファイル検索ツール を新しいタブで開く',
 
 		// 記事エクスプローラ（{count} は件数に置換される）
 		'articles.description':
@@ -159,6 +167,14 @@ export const translations = {
 		'portfolio.analytics.description':
 			'A website that displays analytics data collected with GA4 as charts.',
 		'portfolio.analytics.openAria': 'Open Nasuton no Matome Analytics in a new tab',
+		'portfolio.algorithm.title': 'Algorithm Visualizer',
+		'portfolio.algorithm.description':
+			'A Windows desktop app for observing eight sorting algorithms step by step with the same input on the same screen. Bar charts visualize comparisons, swaps, and writes, with Japanese explanations of how each algorithm works and its current progress.',
+		'portfolio.algorithm.openAria': 'Open Algorithm Visualizer in a new tab',
+		'portfolio.fileSearch.title': 'File Search Tool',
+		'portfolio.fileSearch.description':
+			'A Japanese-language GUI tool built with Rust and egui. It combines file searches within folders, size summaries, identification of files with the same name, and SHA-256 comparisons. Switch between parallel and single-threaded processing to compare results and elapsed time under the same conditions.',
+		'portfolio.fileSearch.openAria': 'Open File Search Tool in a new tab',
 
 		// 記事エクスプローラ（{count} は件数に置換される）
 		'articles.description':

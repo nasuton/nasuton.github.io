@@ -33,6 +33,7 @@ const skillMap: Readonly<Record<string, string>> = {
 	'webassembly': 'siWebassembly',
 	'java': 'siOpenjdk',
 	'c++': 'siCplusplus',
+	'cmake': 'siCmake',
 	'php': 'siPhp',
 	'ruby': 'siRuby',
 	'swift': 'siSwift',

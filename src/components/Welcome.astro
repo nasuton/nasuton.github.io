@@ -22,7 +22,7 @@ interface BlogPost {
 
 interface PortfolioItem {
 	/** i18n キーのプレフィックス（portfolio.<key>.title など） */
-	key: 'blog' | 'password' | 'lottery' | 'tools' | 'analytics';
+	key: 'blog' | 'password' | 'lottery' | 'tools' | 'analytics' | 'algorithm' | 'fileSearch';
 	url?: string;
 	techs: string[];
 	posts?: BlogPost[];
@@ -78,6 +78,16 @@ const portfolio: PortfolioItem[] = [
 		key: 'analytics',
 		url: 'https://nasuton.github.io/nasuton-analytics-dashboard/',
 		techs: ['JavaScript', 'SQL Server','Go', 'Gin'],
+	},
+	{
+		key: 'algorithm',
+		url: 'https://github.com/nasuton/algorithm-visualizer/releases/tag/v0.1.0',
+		techs: ['C++', 'CMake'],
+	},
+	{
+		key: 'fileSearch',
+		url: 'https://github.com/nasuton/Fast_File_Search/releases/tag/v0.1.0',
+		techs: ['Rust'],
 	},
 ];
 
