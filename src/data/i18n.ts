@@ -76,6 +76,10 @@ export const translations = {
 		'portfolio.fileSearch.description':
 			'Rust / eguiで作った日本語GUIツールです。フォルダ内のファイル検索から、サイズ集計、同名ファイルの抽出、SHA-256比較までをまとめています。並列処理とシングルスレッド処理を切り替え、同じ条件で結果と所要時間を確認できます',
 		'portfolio.fileSearch.openAria': 'ファイル検索ツール を新しいタブで開く',
+		'portfolio.solitaire.title': 'クロンダイク・ソリティア',
+		'portfolio.solitaire.description':
+			'Go + Ebitengine 製のクロンダイク・ソリティア（山札 1 枚めくり）。WebAssembly でブラウザ上で動作します',
+		'portfolio.solitaire.openAria': 'クロンダイク・ソリティア を新しいタブで開く',
 
 		// 記事エクスプローラ（{count} は件数に置換される）
 		'articles.description':
@@ -175,6 +179,10 @@ export const translations = {
 		'portfolio.fileSearch.description':
 			'A Japanese-language GUI tool built with Rust and egui. It combines file searches within folders, size summaries, identification of files with the same name, and SHA-256 comparisons. Switch between parallel and single-threaded processing to compare results and elapsed time under the same conditions.',
 		'portfolio.fileSearch.openAria': 'Open File Search Tool in a new tab',
+		'portfolio.solitaire.title': 'Klondike Solitaire',
+		'portfolio.solitaire.description':
+			'Klondike Solitaire (draw one) built with Go and Ebitengine. Runs in the browser via WebAssembly.',
+		'portfolio.solitaire.openAria': 'Open Klondike Solitaire in a new tab',
 
 		// 記事エクスプローラ（{count} は件数に置換される）
 		'articles.description':
