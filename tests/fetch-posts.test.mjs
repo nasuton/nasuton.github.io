@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import vm from 'node:vm';
 import { readRssPosts } from '../src/lib/rss-posts.mjs';
+import { fetchPostThumbnail } from '../src/lib/post-thumbnails.mjs';
 
 const source = await readFile(new URL('../src/fetch-posts.mjs', import.meta.url), 'utf8');
 const techFile = 'src/data/posts.json';
@@ -11,7 +12,7 @@ const feed = (type) => '<rss><channel>' + [1, 2, 3, 4, 5, 6].map((n) =>
 	`<item><title>${type} ${n}</title><link>https://example.com/${type}/${n}</link><pubDate>Thu, 24 Sep 2026 01:00:00 +0000</pubDate><description>Summary</description></item>`,
 ).join('') + '</channel></rss>';
 
-async function run({ techFails = false, photoFails = false, apiWorks = false, noCache = false, truncatedPhoto = false } = {}) {
+async function run({ techFails = false, photoFails = false, apiWorks = false, noCache = false, truncatedPhoto = false, thumbnailFailure = null, noImage = false } = {}) {
 	const originalTech = '[{"title":"cached tech","url":"https://example.com/tech/1","thumb":"https://example.com/tech.jpg"}]\n';
 	const originalPhoto = '[{"title":"cached photo","url":"https://example.com/photo/1","thumb":"https://example.com/photo.jpg"}]\n';
 	const files = new Map(noCache ? [] : [[techFile, originalTech], [photoFile, originalPhoto]]);
@@ -25,8 +26,13 @@ async function run({ techFails = false, photoFails = false, apiWorks = false, no
 			requests.push(url);
 			if (url.endsWith('/api')) {
 				return apiWorks
-					? new Response(JSON.stringify([1, 2, 3, 4].map((n) => ({ title: { rendered: `API ${n}` } }))), { headers: { 'Content-Type': 'application/json' } })
+					? new Response(JSON.stringify([1, 2, 3, 4].map((n) => ({ title: { rendered: `API ${n}` }, link: `https://example.com/tech/${n}` }))), { headers: { 'Content-Type': 'application/json' } })
 					: new Response('Forbidden', { status: 403 });
+			}
+			if (url.startsWith('https://example.com/tech/')) {
+				if (thumbnailFailure === 'timeout') throw new DOMException('Timed out', 'TimeoutError');
+				if (thumbnailFailure === '403') return new Response('Forbidden', { status: 403 });
+				return new Response(`<head>${noImage ? '' : `<meta property="og:image" content="${url}.jpg">`}</head>`, { headers: { 'Content-Type': 'text/html' } });
 			}
 			const isPhoto = url.endsWith('/photo-feed');
 			if (isPhoto ? photoFails : techFails) throw new DOMException('Timed out', 'TimeoutError');
@@ -42,9 +48,11 @@ async function run({ techFails = false, photoFails = false, apiWorks = false, no
 	};
 	const fsModule = new vm.SyntheticModule(['default'], function () { this.setExport('default', fsMock); }, { context });
 	const rssModule = new vm.SyntheticModule(['readRssPosts'], function () { this.setExport('readRssPosts', readRssPosts); }, { context });
+	const thumbnailModule = new vm.SyntheticModule(['fetchPostThumbnail'], function () { this.setExport('fetchPostThumbnail', fetchPostThumbnail); }, { context });
 	const module = new vm.SourceTextModule(source, { context });
 	await module.link((specifier) => {
 		if (specifier === 'fs/promises') return fsModule;
+		if (specifier === './lib/post-thumbnails.mjs') return thumbnailModule;
 		assert.equal(specifier, './lib/rss-posts.mjs');
 		return rssModule;
 	});
@@ -57,7 +65,10 @@ test('saves three tech posts and five photo posts to separate files', async () =
 	assert.equal(JSON.parse(files.get(techFile)).length, 3);
 	assert.equal(JSON.parse(files.get(photoFile)).length, 5);
 	assert.equal(JSON.parse(files.get(photoFile))[0].thumb, 'https://example.com/photo.jpg');
-	assert.deepEqual(requests, ['https://example.com/api', 'https://example.com/tech-feed', 'https://example.com/photo-feed']);
+	assert.deepEqual(JSON.parse(files.get(techFile)).map((post) => post.thumb), [
+		'https://example.com/tech.jpg', 'https://example.com/tech/2.jpg', 'https://example.com/tech/3.jpg',
+	]);
+	assert.deepEqual(requests, ['https://example.com/api', 'https://example.com/tech-feed', 'https://example.com/tech/2', 'https://example.com/tech/3', 'https://example.com/photo-feed']);
 	assert.ok(logs.some((s) => s.includes('saved 5 photo posts')));
 });
 
@@ -65,7 +76,8 @@ test('photo RSS is fetched even when the tech API succeeds', async () => {
 	const { files, requests } = await run({ apiWorks: true });
 	assert.equal(JSON.parse(files.get(techFile)).length, 3);
 	assert.equal(JSON.parse(files.get(photoFile)).length, 5);
-	assert.equal(requests.length, 2);
+	assert.ok(!requests.includes('https://example.com/tech-feed'));
+	assert.ok(requests.includes('https://example.com/photo-feed'));
 });
 
 test('tech failure preserves its cache while photo posts update', async () => {
@@ -89,4 +101,20 @@ test('both failures preserve existing files, or create empty files on the first 
 	const empty = await run({ techFails: true, photoFails: true, noCache: true });
 	assert.deepEqual(JSON.parse(empty.files.get(techFile)), []);
 	assert.deepEqual(JSON.parse(empty.files.get(photoFile)), []);
+});
+
+test('missing RSS thumbnails are supplemented even without a cache', async () => {
+	const { files } = await run({ noCache: true });
+	assert.deepEqual(JSON.parse(files.get(techFile)).map((post) => post.thumb), [1, 2, 3].map((n) => `https://example.com/tech/${n}.jpg`));
+});
+
+test('thumbnail errors or absent metadata still save articles and retain cached thumbnails', async () => {
+	for (const options of [{ thumbnailFailure: '403' }, { thumbnailFailure: 'timeout' }, { noImage: true }]) {
+		const { files, logs } = await run(options);
+		const posts = JSON.parse(files.get(techFile));
+		assert.equal(posts.length, 3);
+		assert.deepEqual(posts.map((post) => post.thumb), ['https://example.com/tech.jpg', null, null]);
+		assert.equal(JSON.parse(files.get(photoFile)).length, 5);
+		if (options.thumbnailFailure) assert.ok(logs.some((s) => s.includes('Failed to fetch thumbnail')));
+	}
 });

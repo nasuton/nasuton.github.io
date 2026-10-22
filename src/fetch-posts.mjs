@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import { readRssPosts } from './lib/rss-posts.mjs';
+import { fetchPostThumbnail } from './lib/post-thumbnails.mjs';
 
 const POSTS_FILE = 'src/data/posts.json';
 const API_URL =
@@ -96,6 +97,18 @@ async function fetchLatestPosts() {
 			console.warn(`[WARN] API fetch failed: ${error.message}. Trying RSS...`);
 			source = 'RSS';
 			posts = await fetchRssPosts();
+		}
+		for (const post of posts) {
+			if (post.thumb) continue;
+			try {
+				post.thumb = await fetchPostThumbnail(post.url, {
+					headers: { 'User-Agent': USER_AGENT },
+					fetchImpl: fetch,
+				});
+				console.log(`[Thumbnail] ${post.url}: ${post.thumb || 'og:image not found'}`);
+			} catch (error) {
+				console.warn(`[WARN] Failed to fetch thumbnail for ${post.url}: ${error.message}`);
+			}
 		}
 		await fs.mkdir('src/data', { recursive: true });
 		await fs.writeFile(POSTS_FILE, JSON.stringify(posts, null, 2) + '\n', 'utf-8');
