@@ -50,7 +50,7 @@ async function run({ total = 25, minCount = 20, failPage = null, emptyLastPage =
 	}, { context });
 	const module = new vm.SourceTextModule(source, { context });
 	await module.link((specifier) => {
-		if (specifier === 'fs/promises') return fsModule;
+		if (specifier === 'node:fs/promises') return fsModule;
 		if (specifier === './lib/rss-posts.mjs') return rssModule;
 		assert.equal(specifier, './lib/related-posts.mjs');
 		return relatedModule;
