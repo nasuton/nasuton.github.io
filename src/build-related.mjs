@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import { readRssPosts } from './lib/rss-posts.mjs';
 import { buildRelatedIndex } from './lib/related-posts.mjs';
 

@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import { readRssPosts } from './lib/rss-posts.mjs';
 import { fetchPostThumbnail } from './lib/post-thumbnails.mjs';
 

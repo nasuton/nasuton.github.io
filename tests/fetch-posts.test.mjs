@@ -51,7 +51,7 @@ async function run({ techFails = false, photoFails = false, apiWorks = false, no
 	const thumbnailModule = new vm.SyntheticModule(['fetchPostThumbnail'], function () { this.setExport('fetchPostThumbnail', fetchPostThumbnail); }, { context });
 	const module = new vm.SourceTextModule(source, { context });
 	await module.link((specifier) => {
-		if (specifier === 'fs/promises') return fsModule;
+		if (specifier === 'node:fs/promises') return fsModule;
 		if (specifier === './lib/post-thumbnails.mjs') return thumbnailModule;
 		assert.equal(specifier, './lib/rss-posts.mjs');
 		return rssModule;
